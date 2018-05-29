@@ -35,10 +35,46 @@ class Game {
 		this.activePlayer = activePlayer;
 	}
 
+	reset() {
+		this.winnerInfo = null;
+		this.paused = false;
+		this.board.resetBoard();
+		this.players = [];
+		this.gameEvents = [];
+		this.state = gameStates.init;
+		this._showGameWelcome();
+		this._initialize();
+	}
+
+	showGameInfo() {
+		this.app.clearPrompt();
+
+		if (this.state === gameStates.init) {
+			this.paused = false;
+			this.reset();
+		} else if (this.state === gameStates.started) {
+			if (this.paused) {
+				this.app.show('Game', 'Game paused. Type "resume" to continue...', messageStates.info);
+			} else {
+				this._displayGameInfo();
+			}
+		} else if (this.state === gameStates.end) {
+			if (this.paused) {
+				this.app.show('Game', 'Game paused. Type "resume" to continue...', messageStates.info);
+			} else {
+				this._showEndInfo();
+			}
+		} else {
+			this.app.show('Game', 'Unexpected game state error', messageStates.warning);
+			this.app.setState('app');
+			this.app.run();
+		}
+	}
+
 	inputHandler(userInput) {
 		if (userInput) {
-			this.app._clearPrompt();
-			// console.log('inside game', this.app.state, this.state);
+			this.app.clearPrompt();
+			
 			if (Object.keys(this.gameCommands).includes(userInput)) {
 				this.app.show('Game', `Game Command '${userInput}' Accepted`, messageStates.success);
 				this.gameCommands[userInput](this);
@@ -59,7 +95,7 @@ class Game {
 			}
 		}
 	}
-	
+
 	_initStateHandler(userInput) {
 		if (userInput === 'ready') {
 			this.state = gameStates.started;
@@ -72,7 +108,6 @@ class Game {
 
 	_startedStateHandler(userInput) {
 		if (this.players[this.activePlayer] instanceof Player) {	
-			// Show current user action.
 
 			if (userInput === '1' || userInput === '2' || userInput === '3' ||
 				userInput === '4' || userInput === '5' || userInput === '6' ||
@@ -93,14 +128,11 @@ class Game {
 		if (userInput === 'end') {
 			this._logGame(); // Log the game results	
 			this.reset(); // reset game state. 
-
 			this.app.show('', 'Game completed', '');
 			this.gameCommands['home'](this); // take user back to home.
-
 			this.app.setPrompt(`${this.app.players['1']}: `); // reset the prompt
 		} else if (userInput === 'new') {
 			this._logGame(); // Log the game results	
-
 			this.gameCommands['reset'](this); // reset game state. 
 			this.app.setPrompt(`${this.app.players['1']}: `); // reset the prompt
 		} else if (userInput === 'home') {
@@ -110,17 +142,6 @@ class Game {
 			this.app.show('', 'What would you like to do? Type "new" or "end".', '');
 			this.app.setPrompt(`${this.app.players['1']}: `); // reset the prompt
 		}
-	}
-
-	reset() {
-		this.winnerInfo = null;
-		this.paused = false;
-		this.board.resetBoard();
-		this.players = [];
-		this.gameEvents = [];
-		this.state = gameStates.init;
-		this._showGameWelcome();
-		this._initialize();
 	}
 
 	_initialize() {
@@ -154,33 +175,6 @@ class Game {
 		this.app.show('', '+ Randomly selecting starting player...', '');
 		this.app.show('', gameMessages.firstMove.replace('{player}', this.players[this.activePlayer].name).replace('{marker}', this.players[this.activePlayer].marker), '');
 		this.app.show('', `${ gameMessages.startPhrase}`, '');
-
-		// this.app.setPrompt(`${this.app.players['1']}: `);a
-	}
-
-	showGameInfo() {
-		this.app._clearPrompt();
-
-		if (this.state === gameStates.init) {
-			this.paused = false;
-			this.reset();
-		} else if (this.state === gameStates.started) {
-			if (this.paused) {
-				this.app.show('Game', 'Game paused. Type "resume" to continue...', messageStates.info);
-			} else {
-				this._displayGameInfo();
-			}
-		} else if (this.state === gameStates.end) {
-			if (this.paused) {
-				this.app.show('Game', 'Game paused. Type "resume" to continue...', messageStates.info);
-			} else {
-				this._showEndInfo();
-			}
-		} else {
-			this.app.show('Game', 'Unexpected game state error', messageStates.warning);
-			this.app.setState('app');
-			this.app.run();
-		}
 	}
 
 	_cycleActivePlayer() {
@@ -200,7 +194,7 @@ class Game {
 			// Get winner information.
 			let info = isWinner(this.board, this.players[currentPlayer].marker);
 			
-			this.app._clearPrompt();
+			this.app.clearPrompt();
 			
 			if (info) {
 				this.state = gameStates.end;
@@ -213,7 +207,7 @@ class Game {
 				this._showEndInfo();
 				this.app.setPrompt(`${this.app.players['1']}: `);
 			} else {
-				// this.app._clearPrompt();
+				// this.app.clearPrompt();
 				this._cycleActivePlayer();
 			}
 		} else {
@@ -226,7 +220,7 @@ class Game {
 		// AI player move loop.
 		while(this.players[this.activePlayer] instanceof Ai && this.winnerInfo === null) {
 			this.app.show('', this.gameMessages.help, '');
-			this.app._clearPrompt();
+			this.app.clearPrompt();
 			this._showPrevMove();
 			this._showBoard();
 			

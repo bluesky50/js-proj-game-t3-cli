@@ -14,7 +14,7 @@ r1 = readline.createInterface(process.stdin, process.stdout);
  * The App class that holds main application logic.
  */
 class App {
-	constructor(name) {
+	constructor(name, view = null, game = null) {
 		this.appName = name || appName;
 		this.appCommands = appCommands;
 		this.appMessages = appMessages;
@@ -22,8 +22,8 @@ class App {
 		this.playerCount = 1;
 		this.aiSkill = DEFAULT_AI_SKILL;
 		this.players = { '1': P_1, '2': P_2 };
-		this.view = new View();
-		this.game = new Game(this);
+		this.view = view || new View();
+		this.game = game || new Game(this);
 		this.gameHistory = new Array();
 	}
 
@@ -32,7 +32,7 @@ class App {
 		r1.on('line', (line) => {
 			let userInput = line.trim();
 			if (userInput) {
-				this._clearPrompt();
+				this.clearPrompt();
 				if (this.state !== 'game' && Object.keys(this.appCommands).includes(userInput)) {					
 					this.view.log(this.appName, `Command '${userInput}' accepted`, messageStates.success);
 					this.appCommands[userInput](this);
@@ -64,7 +64,7 @@ class App {
 	}
 
 	run() {
-		this._clearPrompt();
+		this.clearPrompt();
 		this.show('', appMessages.welcome, messageStates.info);
 		this.appCommands['menu'](this);
 	}
@@ -120,7 +120,7 @@ class App {
 		r1.prompt();
 	}
 
-	_clearPrompt() {
+	clearPrompt() {
 		readline.cursorTo(process.stdout, 0, 0);
 		readline.clearScreenDown(process.stdout);
 		this.show('', `${colors.under}Tic Tac Toe: ${this.state}${colors.reset}`, messageStates.info);

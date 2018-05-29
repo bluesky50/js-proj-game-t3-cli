@@ -1,6 +1,11 @@
 ## Description 
 This project is an implementation of Tic Tac Toe in Javascript for the command line.
 
+Command to start:
+``` 
+node main.js
+```
+
 ## Work Flow
 
 ### Planning
