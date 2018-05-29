@@ -4,7 +4,7 @@ const readline = require('readline');
 
 const { colors } = require('./lib/colors.js');
 const { messageStates } = require('./utils/viewUtils.js');
-const { appName, P_1, P_2, DEFAULT_AI_SKILL } = require('./lib/constants.js');
+const { appName, P_1, P_2, DEFAULT_AI_SKILL, MARKER_1, MARKER_2 } = require('./lib/constants.js');
 const { appCommands, appMessages, appStates } = require('./utils/appUtils.js');
 
 // Handles user input
@@ -21,7 +21,8 @@ class App {
 		this.state = 'app';
 		this.playerCount = 1;
 		this.aiSkill = DEFAULT_AI_SKILL;
-		this.players = { '1': P_1, '2': P_2 };
+		this.players = { '1': P_1, '1_MARKER': 'default', '2': P_2, '2_MARKER': 'default' };
+		this.firstMover = null;
 		this.view = view || new View();
 		this.game = game || new Game(this);
 		this.gameHistory = new Array();
@@ -104,9 +105,29 @@ class App {
 		this.gameHistory.push(gameInfo);
 	}
 	
-	setUsername(player, name) {
+	setUserInfo(player, name, marker) {
 		if (player === '1' || player === '2') {
 			this.players[player] = name;
+
+			const otherPlayerNum = player === '1' ? '2' : '1';
+			const pMarkerInd = player + '_MARKER';
+			const oppositeMarkerInd = otherPlayerNum + '_MARKER';
+
+			if (marker === MARKER_1 || marker === MARKER_2 || marker === 'default') {
+				if (marker === 'default') {
+					this.players[player+'_MARKER'] = marker;
+					this.show(this.appName, `Setting player ${player} marker to '${marker}'`, messageStates.success);
+			const oppositeMarkerInd = otherPlayerNum + '_MARKER';
+				} else if (marker !== this.players[oppositeMarkerInd]) {
+					this.players[player+'_MARKER'] = marker;
+					this.show(this.appName, `Setting player ${player} marker to '${marker}'`, messageStates.success);
+				} else {
+					this.show(this.appName, `${marker} is taken.`, messageStates.warning);
+				}
+			} else {
+				this.show(this.appName, `${marker} is invalid (Use: ${MARKER_1} or ${MARKER_2}).`, messageStates.warning);
+			}
+
 			this.show(this.appName, `Setting player ${player} name to '${name}'`, messageStates.success);
 		} 
 	}
@@ -181,7 +202,7 @@ class App {
 				break;
 			case '2':
 				this.appCommands['options-2'](this);
-				r1.setPrompt(`\nChoose player name (example: 1 username)\n${colors.cyan}Player & Name: ${colors.reset}`);
+				r1.setPrompt(`\nChoose player name & marker (example: 1 username X)\n${colors.cyan}Player & Name: ${colors.reset}`);
 				r1.prompt();
 				break;
 			case '3':
@@ -212,7 +233,7 @@ class App {
 
 	_option2StateInputHandler(userInput) {
 		const result = userInput.split(' ');
-		this.setUsername(result[0], result[1]);
+		this.setUserInfo(result[0], result[1], result[2]);
 		this.appCommands['menu'](this);
 	}
 

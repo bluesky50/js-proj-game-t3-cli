@@ -24,6 +24,8 @@ User Flow Planning
 8. Ability to pause and resume a game.
 9. View rendering for app state and game state using color prioritization.
 10. Application and game have "help" commands to inform users of available options.
+11. Ability to predefine which user get's first move (not enabled by default due to disruption of designated user flow for gameplay);
+12. Ability for the user to define their marker indicator (not enabled by default due to disruption of designated user flow for gameplay).
 
 ### Development
 

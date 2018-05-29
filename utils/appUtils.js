@@ -13,7 +13,7 @@ const appMessages = {
 	menu: 'Menu:\n\n1. {state}\n2. Options\n3. History\n4. Exit',
 	about: 'This game is a Tic Tac Toe game implemented in Javascript by jchiang',
 	exit: 'Exiting application',
-	options: 'Options:\n\n0. Main Menu\n1. Set number of players (0-2)\n2. Set player names (example: 1 player1_name)\n3. Set Ai skill level (0-1)'
+	options: 'Options:\n\n0. Main Menu\n1. Set number of players (0-2)\n2. Set player names & marker (example: 1 player1 X)\n3. Set Ai skill level (0-1)'
 }
 
 /**
@@ -31,7 +31,7 @@ const appCommands = {
 	},
 	'status': function(app) {
 		app.setState(appStates.app);
-		const result = `Application State\nApp State: ${app.state}\nPlayer count: ${app.playerCount}\nPlayer 1: ${app.players['1']}\nPlayer 2: ${app.players['2']}\nAi skill: ${app.aiSkill}`;
+		const result = `Application State\nApp State: ${app.state}\nPlayer count: ${app.playerCount}\nPlayer 1: ${app.players['1']} ${app.players['1_MARKER']}\nPlayer 2: ${app.players['2']} ${app.players['2_MARKER']}\nAi skill: ${app.aiSkill}`;
 		app.show(app.appName, result, 'debug');
 	},
 	'history': function(app) {

@@ -155,13 +155,66 @@ class Game {
 		} 
 		
 		if (playerCount == 1) {
-			this.players.push(new Player(this.app.players['1'], MARKER_1));
-			this.players.push(new Ai('ai-bot-1', MARKER_2, this.app.aiSkill, moveSpeed));
+			let p1Marker, p2Marker;
+			
+			if (this.app.players['1_MARKER'] === 'default') {
+				p1Marker = MARKER_1;
+				p2Marker = MARKER_2;
+			} else {
+				if (this.app.players['1_MARKER'] === MARKER_2) {
+					p1Marker = this.app.players['1_MARKER'];
+					p2Marker = MARKER_1;
+				} else {
+					p1Marker = this.app.players['1_MARKER'];;
+					p2Marker = MARKER_2;
+				}
+			}
+
+			this.players.push(new Player(this.app.players['1'], p1Marker));
+			this.players.push(new Ai('ai-bot-1', p2Marker, this.app.aiSkill, moveSpeed));
 		} 
 		
 		if (playerCount == 2) {
-			this.players.push(new Player(this.app.players['1'], MARKER_1));
-			this.players.push(new Player(this.app.players['2'], MARKER_2));
+			let p1Marker, p2Marker;
+
+			if (this.app.players['1_MARKER'] === 'default' && this.app.players['1_MARKER'] === 'default') {
+				p1Marker = MARKER_1;
+				p2Marker = MARKER_2;
+			} else if (this.app.players['1_MARKER'] === MARKER_1) {
+				p1Marker = this.app.players['1_MARKER'];
+				if (this.app.players['2_MARKER'] === 'default') {
+					p2Marker = MARKER_2;
+				} else {
+					p2Marker = this.app.players['2_MARKER'];
+				}
+			} else if (this.app.players['1_MARKER'] === MARKER_2) {
+				p1Marker = this.app.players['1_MARKER'];
+				
+				if (this.app.players['2_MARKER'] === 'default') {
+					p2Marker = MARKER_1;
+				} else {
+					p2Marker = this.app.players['2_MARKER'];
+				}
+			} else if (this.app.players['2_MARKER'] === MARKER_1) {
+				p2Marker = this.app.players['2_MARKER'];
+
+				if (this.app.players['1_MARKER'] === 'default') {
+					p1Marker = MARKER_2;
+				} else {
+					p1Marker= this.app.players['1_MARKER'];
+				}
+			} else if (this.app.players['2_MARKER'] === MARKER_2) {
+				p2Marker = this.app.players['2_MARKER'];
+
+				if (this.app.players['1_MARKER'] === 'default') {
+					p1Marker = MARKER_1;
+				} else {
+					p1Marker = this.app.players['1_MARKER'];
+				}
+			}
+
+			this.players.push(new Player(this.app.players['1'], p1Marker));
+			this.players.push(new Player(this.app.players['2'], p2Marker));
 		}
 
 		this.app.show('', this.gameMessages.players.replace('{player1}', this.players[0].name)
